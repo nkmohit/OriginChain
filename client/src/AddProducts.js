@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useHistory } from "react-router-dom"
 import Web3 from "web3";
 import SupplyChainABI from "./artifacts/SupplyChain.json"
-import './AddMed.css';
+import './AddProduct.css';
 
 function AddProducts() {
     const history = useHistory()
@@ -14,10 +14,10 @@ function AddProducts() {
     const [currentaccount, setCurrentaccount] = useState("");
     const [loader, setloader] = useState(true);
     const [SupplyChain, setSupplyChain] = useState();
-    const [MED, setMED] = useState();
-    const [MedName, setMedName] = useState();
-    const [MedDes, setMedDes] = useState();
-    const [MedStage, setMedStage] = useState();
+    const [products, setProducts] = useState();
+    const [productName, setProductName] = useState();
+    const [productDes, setProductDes] = useState();
+    const [productStage, setProductStage] = useState();
 
 
     const loadWeb3 = async () => {
@@ -45,15 +45,15 @@ function AddProducts() {
             const supplychain = new web3.eth.Contract(SupplyChainABI.abi, networkData.address);
             setSupplyChain(supplychain);
             var i;
-            const medCtr = await supplychain.methods.medicineCtr().call();
-            const med = {};
-            const medStage = [];
-            for (i = 0; i < medCtr; i++) {
-                med[i] = await supplychain.methods.MedicineStock(i + 1).call();
-                medStage[i] = await supplychain.methods.showStage(i + 1).call();
+            const productCtr = await supplychain.methods.productCtr().call();
+            const product = {};
+            const stages = [];
+            for (i = 0; i < productCtr; i++) {
+                product[i] = await supplychain.methods.ProductStock(i + 1).call();
+                stages[i] = await supplychain.methods.showStage(i + 1).call();
             }
-            setMED(med);
-            setMedStage(medStage);
+            setProducts(product);
+            setProductStage(stages);
             setloader(false);
         }
         else {
@@ -71,16 +71,16 @@ function AddProducts() {
     const redirect_to_home = () => {
         history.push('/')
     }
-    const handlerChangeNameMED = (event) => {
-        setMedName(event.target.value);
+    const handlerChangeProductName = (event) => {
+        setProductName(event.target.value);
     }
-    const handlerChangeDesMED = (event) => {
-        setMedDes(event.target.value);
+    const handlerChangeProductDes = (event) => {
+        setProductDes(event.target.value);
     }
-    const handlerSubmitMED = async (event) => {
+    const handlerSubmitProduct = async (event) => {
         event.preventDefault();
         try {
-            var reciept = await SupplyChain.methods.addMedicine(MedName, MedDes).send({ from: currentaccount });
+            var reciept = await SupplyChain.methods.addProduct(productName, productDes).send({ from: currentaccount });
             if (reciept) {
                 loadBlockchaindata();
             }
@@ -102,18 +102,18 @@ function AddProducts() {
             <div className="row">
                 <div className="col-12">
                     <h5>Add Product Order:</h5>
-                    <form onSubmit={handlerSubmitMED} className="form-inline mb-4">
+                    <form onSubmit={handlerSubmitProduct} className="form-inline mb-4">
                         <input 
                             className="form-control form-control-sm mr-2" 
                             type="text" 
-                            onChange={handlerChangeNameMED} 
+                            onChange={handlerChangeProductName} 
                             placeholder="Product Name" 
                             required 
                         />
                         <input 
                             className="form-control form-control-sm mr-2" 
                             type="text" 
-                            onChange={handlerChangeDesMED} 
+                            onChange={handlerChangeProductDes} 
                             placeholder="Product Description" 
                             required 
                         />
@@ -136,12 +136,12 @@ function AddProducts() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {Object.keys(MED).map(key => (
+                                {Object.keys(products).map(key => (
                                     <tr key={key}>
-                                        <td>{MED[key].id}</td>
-                                        <td>{MED[key].name}</td>
-                                        <td>{MED[key].description}</td>
-                                        <td>{MedStage[key] && MedStage[key].replace(/Medicine|med|MED|Med/g, 'Product')}</td>
+                                        <td>{products[key].id}</td>
+                                        <td>{products[key].name}</td>
+                                        <td>{products[key].description}</td>
+                                        <td>{productStage[key]}</td>
                                     </tr>
                                 ))}
                             </tbody>

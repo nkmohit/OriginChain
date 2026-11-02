@@ -13,8 +13,8 @@ function Track() {
     const [currentaccount, setCurrentaccount] = useState("");
     const [loader, setloader] = useState(true);
     const [SupplyChain, setSupplyChain] = useState();
-    const [MED, setMED] = useState();
-    const [MedStage, setMedStage] = useState();
+    const [products, setProducts] = useState();
+    const [productStage, setProductStage] = useState();
     const [ID, setID] = useState();
     const [RMS, setRMS] = useState();
     const [MAN, setMAN] = useState();
@@ -51,15 +51,15 @@ function Track() {
             const supplychain = new web3.eth.Contract(SupplyChainABI.abi, networkData.address);
             setSupplyChain(supplychain);
             var i;
-            const medCtr = await supplychain.methods.medicineCtr().call();
-            const med = {};
-            const medStage = [];
-            for (i = 0; i < medCtr; i++) {
-                med[i + 1] = await supplychain.methods.MedicineStock(i + 1).call();
-                medStage[i + 1] = await supplychain.methods.showStage(i + 1).call();
+            const productCtr = await supplychain.methods.productCtr().call();
+            const product = {};
+            const stages = [];
+            for (i = 0; i < productCtr; i++) {
+                product[i + 1] = await supplychain.methods.ProductStock(i + 1).call();
+                stages[i + 1] = await supplychain.methods.showStage(i + 1).call();
             }
-            setMED(med);
-            setMedStage(medStage);
+            setProducts(product);
+            setProductStage(stages);
             const rmsCtr = await supplychain.methods.rmsCtr().call();
             const rms = {};
             for (i = 0; i < rmsCtr; i++) {
@@ -105,10 +105,10 @@ function Track() {
                         <h3><b><u>Product Details:</u></b></h3>
                     </div>
                     <div className="card-body">
-                        <p><b>Product ID:</b> {MED[ID].id}</p>
-                        <p><b>Name:</b> {MED[ID].name}</p>
-                        <p><b>Description:</b> {MED[ID].description}</p>
-                        <p><b>Current stage:</b> {MedStage[ID] && MedStage[ID].replace(/Medicine|med|MED|Med/g, 'Product')}</p>
+                        <p><b>Product ID:</b> {products[ID].id}</p>
+                        <p><b>Name:</b> {products[ID].name}</p>
+                        <p><b>Description:</b> {products[ID].description}</p>
+                        <p><b>Current stage:</b> {productStage[ID]}</p>
                     </div>
                 </div>
     
@@ -117,9 +117,9 @@ function Track() {
                         <div className="card">
                             <div className="card-header"><h4><u>Raw Materials Supplied by:</u></h4></div>
                             <div className="card-body">
-                                <p><b>Supplier ID:</b> {RMS[MED[ID].RMSid].id}</p>
-                                <p><b>Name:</b> {RMS[MED[ID].RMSid].name}</p>
-                                <p><b>Place:</b> {RMS[MED[ID].RMSid].place}</p>
+                                <p><b>Supplier ID:</b> {RMS[products[ID].RMSid].id}</p>
+                                <p><b>Name:</b> {RMS[products[ID].RMSid].name}</p>
+                                <p><b>Place:</b> {RMS[products[ID].RMSid].place}</p>
                             </div>
                         </div>
                     </li>
@@ -127,9 +127,9 @@ function Track() {
                         <div className="card">
                             <div className="card-header"><h4><u>Manufactured by:</u></h4></div>
                             <div className="card-body">
-                                <p><b>Manufacturer ID:</b> {MAN[MED[ID].MANid].id}</p>
-                                <p><b>Name:</b> {MAN[MED[ID].MANid].name}</p>
-                                <p><b>Place:</b> {MAN[MED[ID].MANid].place}</p>
+                                <p><b>Manufacturer ID:</b> {MAN[products[ID].MANid].id}</p>
+                                <p><b>Name:</b> {MAN[products[ID].MANid].name}</p>
+                                <p><b>Place:</b> {MAN[products[ID].MANid].place}</p>
                             </div>
                         </div>
                     </li>
@@ -137,9 +137,9 @@ function Track() {
                         <div className="card">
                             <div className="card-header"><h4><u>Distributed by:</u></h4></div>
                             <div className="card-body">
-                                <p><b>Distributor ID:</b> {DIS[MED[ID].DISid].id}</p>
-                                <p><b>Name:</b> {DIS[MED[ID].DISid].name}</p>
-                                <p><b>Place:</b> {DIS[MED[ID].DISid].place}</p>
+                                <p><b>Distributor ID:</b> {DIS[products[ID].DISid].id}</p>
+                                <p><b>Name:</b> {DIS[products[ID].DISid].name}</p>
+                                <p><b>Place:</b> {DIS[products[ID].DISid].place}</p>
                             </div>
                         </div>
                     </li>
@@ -147,9 +147,9 @@ function Track() {
                         <div className="card">
                             <div className="card-header"><h4><u>Retailed by:</u></h4></div>
                             <div className="card-body">
-                                <p><b>Retailer ID:</b> {RET[MED[ID].RETid].id}</p>
-                                <p><b>Name:</b> {RET[MED[ID].RETid].name}</p>
-                                <p><b>Place:</b> {RET[MED[ID].RETid].place}</p>
+                                <p><b>Retailer ID:</b> {RET[products[ID].RETid].id}</p>
+                                <p><b>Name:</b> {RET[products[ID].RETid].name}</p>
+                                <p><b>Place:</b> {RET[products[ID].RETid].place}</p>
                             </div>
                         </div>
                     </li>
@@ -181,10 +181,10 @@ function Track() {
                         <h3><b><u>Product Details:</u></b></h3>
                     </div>
                     <div className="card-body">
-                        <p><b>Product ID:</b> {MED[ID].id}</p>
-                        <p><b>Name:</b> {MED[ID].name}</p>
-                        <p><b>Description:</b> {MED[ID].description}</p>
-                        <p><b>Current stage:</b> {MedStage[ID] && MedStage[ID].replace(/Medicine|med|MED|Med/g, 'Product')}</p>
+                        <p><b>Product ID:</b> {products[ID].id}</p>
+                        <p><b>Name:</b> {products[ID].name}</p>
+                        <p><b>Description:</b> {products[ID].description}</p>
+                        <p><b>Current stage:</b> {productStage[ID]}</p>
                     </div>
                 </div>
     
@@ -193,9 +193,9 @@ function Track() {
                         <div className="card">
                             <div className="card-header"><h4><u>Raw Materials Supplied by:</u></h4></div>
                             <div className="card-body">
-                                <p><b>Supplier ID:</b> {RMS[MED[ID].RMSid].id}</p>
-                                <p><b>Name:</b> {RMS[MED[ID].RMSid].name}</p>
-                                <p><b>Place:</b> {RMS[MED[ID].RMSid].place}</p>
+                                <p><b>Supplier ID:</b> {RMS[products[ID].RMSid].id}</p>
+                                <p><b>Name:</b> {RMS[products[ID].RMSid].name}</p>
+                                <p><b>Place:</b> {RMS[products[ID].RMSid].place}</p>
                             </div>
                         </div>
                     </li>
@@ -203,9 +203,9 @@ function Track() {
                         <div className="card">
                             <div className="card-header"><h4><u>Manufactured by:</u></h4></div>
                             <div className="card-body">
-                                <p><b>Manufacturer ID:</b> {MAN[MED[ID].MANid].id}</p>
-                                <p><b>Name:</b> {MAN[MED[ID].MANid].name}</p>
-                                <p><b>Place:</b> {MAN[MED[ID].MANid].place}</p>
+                                <p><b>Manufacturer ID:</b> {MAN[products[ID].MANid].id}</p>
+                                <p><b>Name:</b> {MAN[products[ID].MANid].name}</p>
+                                <p><b>Place:</b> {MAN[products[ID].MANid].place}</p>
                             </div>
                         </div>
                     </li>
@@ -213,9 +213,9 @@ function Track() {
                         <div className="card">
                             <div className="card-header"><h4><u>Distributed by:</u></h4></div>
                             <div className="card-body">
-                                <p><b>Distributor ID:</b> {DIS[MED[ID].DISid].id}</p>
-                                <p><b>Name:</b> {DIS[MED[ID].DISid].name}</p>
-                                <p><b>Place:</b> {DIS[MED[ID].DISid].place}</p>
+                                <p><b>Distributor ID:</b> {DIS[products[ID].DISid].id}</p>
+                                <p><b>Name:</b> {DIS[products[ID].DISid].name}</p>
+                                <p><b>Place:</b> {DIS[products[ID].DISid].place}</p>
                             </div>
                         </div>
                     </li>
@@ -223,9 +223,9 @@ function Track() {
                         <div className="card">
                             <div className="card-header"><h4><u>Retailed by:</u></h4></div>
                             <div className="card-body">
-                                <p><b>Retailer ID:</b> {RET[MED[ID].RETid].id}</p>
-                                <p><b>Name:</b> {RET[MED[ID].RETid].name}</p>
-                                <p><b>Place:</b> {RET[MED[ID].RETid].place}</p>
+                                <p><b>Retailer ID:</b> {RET[products[ID].RETid].id}</p>
+                                <p><b>Name:</b> {RET[products[ID].RETid].name}</p>
+                                <p><b>Place:</b> {RET[products[ID].RETid].place}</p>
                             </div>
                         </div>
                     </li>
@@ -248,10 +248,10 @@ function Track() {
                             <h3><b><u>Product Details:</u></b></h3>
                         </div>
                         <div className="card-body">
-                            <p><b>Product ID:</b> {MED[ID].id}</p>
-                            <p><b>Name:</b> {MED[ID].name}</p>
-                            <p><b>Description:</b> {MED[ID].description}</p>
-                            <p><b>Current stage:</b> {MedStage[ID] && MedStage[ID].replace(/Medicine|med|MED|Med/g, 'Product')}</p>
+                            <p><b>Product ID:</b> {products[ID].id}</p>
+                            <p><b>Name:</b> {products[ID].name}</p>
+                            <p><b>Description:</b> {products[ID].description}</p>
+                            <p><b>Current stage:</b> {productStage[ID]}</p>
                         </div>
                     </div>
         
@@ -260,9 +260,9 @@ function Track() {
                             <div className="card">
                                 <div className="card-header"><h4><u>Raw Materials Supplied by:</u></h4></div>
                                 <div className="card-body">
-                                    <p><b>Supplier ID:</b> {RMS[MED[ID].RMSid].id}</p>
-                                    <p><b>Name:</b> {RMS[MED[ID].RMSid].name}</p>
-                                    <p><b>Place:</b> {RMS[MED[ID].RMSid].place}</p>
+                                    <p><b>Supplier ID:</b> {RMS[products[ID].RMSid].id}</p>
+                                    <p><b>Name:</b> {RMS[products[ID].RMSid].name}</p>
+                                    <p><b>Place:</b> {RMS[products[ID].RMSid].place}</p>
                                 </div>
                             </div>
                         </li>
@@ -270,9 +270,9 @@ function Track() {
                             <div className="card">
                                 <div className="card-header"><h4><u>Manufactured by:</u></h4></div>
                                 <div className="card-body">
-                                    <p><b>Manufacturer ID:</b> {MAN[MED[ID].MANid].id}</p>
-                                    <p><b>Name:</b> {MAN[MED[ID].MANid].name}</p>
-                                    <p><b>Place:</b> {MAN[MED[ID].MANid].place}</p>
+                                    <p><b>Manufacturer ID:</b> {MAN[products[ID].MANid].id}</p>
+                                    <p><b>Name:</b> {MAN[products[ID].MANid].name}</p>
+                                    <p><b>Place:</b> {MAN[products[ID].MANid].place}</p>
                                 </div>
                             </div>
                         </li>
@@ -280,9 +280,9 @@ function Track() {
                             <div className="card">
                                 <div className="card-header"><h4><u>Distributed by:</u></h4></div>
                                 <div className="card-body">
-                                    <p><b>Distributor ID:</b> {DIS[MED[ID].DISid].id}</p>
-                                    <p><b>Name:</b> {DIS[MED[ID].DISid].name}</p>
-                                    <p><b>Place:</b> {DIS[MED[ID].DISid].place}</p>
+                                    <p><b>Distributor ID:</b> {DIS[products[ID].DISid].id}</p>
+                                    <p><b>Name:</b> {DIS[products[ID].DISid].name}</p>
+                                    <p><b>Place:</b> {DIS[products[ID].DISid].place}</p>
                                 </div>
                             </div>
                         </li>
@@ -306,10 +306,10 @@ function Track() {
                         <h3><b><u>Product Details:</u></b></h3>
                     </div>
                     <div className="card-body">
-                        <p><b>Product ID:</b> {MED[ID].id}</p>
-                        <p><b>Name:</b> {MED[ID].name}</p>
-                        <p><b>Description:</b> {MED[ID].description}</p>
-                        <p><b>Current stage:</b> {MedStage[ID] && MedStage[ID].replace(/Medicine|med|MED|Med/g, 'Product')}</p>
+                        <p><b>Product ID:</b> {products[ID].id}</p>
+                        <p><b>Name:</b> {products[ID].name}</p>
+                        <p><b>Description:</b> {products[ID].description}</p>
+                        <p><b>Current stage:</b> {productStage[ID]}</p>
                     </div>
                 </div>
     
@@ -318,9 +318,9 @@ function Track() {
                         <div className="card">
                             <div className="card-header"><h4><u>Raw Materials Supplied by:</u></h4></div>
                             <div className="card-body">
-                                <p><b>Supplier ID:</b> {RMS[MED[ID].RMSid].id}</p>
-                                <p><b>Name:</b> {RMS[MED[ID].RMSid].name}</p>
-                                <p><b>Place:</b> {RMS[MED[ID].RMSid].place}</p>
+                                <p><b>Supplier ID:</b> {RMS[products[ID].RMSid].id}</p>
+                                <p><b>Name:</b> {RMS[products[ID].RMSid].name}</p>
+                                <p><b>Place:</b> {RMS[products[ID].RMSid].place}</p>
                             </div>
                         </div>
                     </li>
@@ -328,9 +328,9 @@ function Track() {
                         <div className="card">
                             <div className="card-header"><h4><u>Manufactured by:</u></h4></div>
                             <div className="card-body">
-                                <p><b>Manufacturer ID:</b> {MAN[MED[ID].MANid].id}</p>
-                                <p><b>Name:</b> {MAN[MED[ID].MANid].name}</p>
-                                <p><b>Place:</b> {MAN[MED[ID].MANid].place}</p>
+                                <p><b>Manufacturer ID:</b> {MAN[products[ID].MANid].id}</p>
+                                <p><b>Name:</b> {MAN[products[ID].MANid].name}</p>
+                                <p><b>Place:</b> {MAN[products[ID].MANid].place}</p>
                             </div>
                         </div>
                     </li>
@@ -353,10 +353,10 @@ function Track() {
                         <h3><b><u>Product Details:</u></b></h3>
                     </div>
                     <div className="card-body">
-                        <p><b>Product ID:</b> {MED[ID].id}</p>
-                        <p><b>Name:</b> {MED[ID].name}</p>
-                        <p><b>Description:</b> {MED[ID].description}</p>
-                        <p><b>Current stage:</b> {MedStage[ID] && MedStage[ID].replace(/Medicine|med|MED|Med/g, 'Product')}</p>
+                        <p><b>Product ID:</b> {products[ID].id}</p>
+                        <p><b>Name:</b> {products[ID].name}</p>
+                        <p><b>Description:</b> {products[ID].description}</p>
+                        <p><b>Current stage:</b> {productStage[ID]}</p>
                     </div>
                 </div>
     
@@ -365,9 +365,9 @@ function Track() {
                         <div className="card">
                             <div className="card-header"><h4><u>Raw Materials Supplied by:</u></h4></div>
                             <div className="card-body">
-                                <p><b>Supplier ID:</b> {RMS[MED[ID].RMSid].id}</p>
-                                <p><b>Name:</b> {RMS[MED[ID].RMSid].name}</p>
-                                <p><b>Place:</b> {RMS[MED[ID].RMSid].place}</p>
+                                <p><b>Supplier ID:</b> {RMS[products[ID].RMSid].id}</p>
+                                <p><b>Name:</b> {RMS[products[ID].RMSid].name}</p>
+                                <p><b>Place:</b> {RMS[products[ID].RMSid].place}</p>
                             </div>
                         </div>
                     </li>
@@ -386,16 +386,16 @@ function Track() {
             <div className="container mt-4">
                 <article className="col-4">
                     <h3><b><u>Product:</u></b></h3>
-                    <span><b>Product ID: </b>{MED[ID].id}</span>
+                    <span><b>Product ID: </b>{products[ID].id}</span>
                     <br />
-                    <span><b>Name:</b> {MED[ID].name}</span>
+                    <span><b>Name:</b> {products[ID].name}</span>
                     <br />
-                    <span><b>Description: </b>{MED[ID].description}</span>
+                    <span><b>Description: </b>{products[ID].description}</span>
                     <br />
-                    <span><b>Current stage: </b>{MedStage[ID] && MedStage[ID].replace(/Medicine|med|MED|Med/g, 'Product')}</span>
+                    <span><b>Current stage: </b>{productStage[ID]}</span>
                     <hr />
                     <br />
-                    <h5>Medicine Not Yet Processed...</h5>
+                    <h5>Product Not Yet Processed...</h5>
                     <button onClick={() => {
                         showTrackTillOrdered(false);
                     }} className="btn btn-outline-success btn-sm">Track Another Item</button>
@@ -414,24 +414,24 @@ function Track() {
     }
     const handlerSubmit = async (event) => {
         event.preventDefault();
-        var ctr = await SupplyChain.methods.medicineCtr().call();
+        var ctr = await SupplyChain.methods.productCtr().call();
         if (!((ID > 0) && (ID <= ctr)))
             alert("Invalid Product ID!!!");
         else {
             // eslint-disable-next-line
-            if (MED[ID].stage == 5)
+            if (products[ID].stage == 5)
                 showTrackTillSold(true);
             // eslint-disable-next-line
-            else if (MED[ID].stage == 4)
+            else if (products[ID].stage == 4)
                 showTrackTillRetail(true);
             // eslint-disable-next-line
-            else if (MED[ID].stage == 3)
+            else if (products[ID].stage == 3)
                 showTrackTillDistribution(true);
             // eslint-disable-next-line
-            else if (MED[ID].stage == 2)
+            else if (products[ID].stage == 2)
                 showTrackTillManufacture(true);
             // eslint-disable-next-line
-            else if (MED[ID].stage == 1)
+            else if (products[ID].stage == 1)
                 showTrackTillRMS(true);
             else
                 showTrackTillOrdered(true);
@@ -459,12 +459,12 @@ function Track() {
                         </tr>
                     </thead>
                     <tbody>
-                        {Object.keys(MED).map((key) => (
+                        {Object.keys(products).map((key) => (
                             <tr key={key}>
-                                <td>{MED[key].id}</td>
-                                <td>{MED[key].name}</td>
-                                <td>{MED[key].description}</td>
-                                <td>{MedStage[key] && MedStage[key].replace(/Medicine|med|MED|Med/g, 'Product')}</td>
+                                <td>{products[key].id}</td>
+                                <td>{products[key].name}</td>
+                                <td>{products[key].description}</td>
+                                <td>{productStage[key]}</td>
                             </tr>
                         ))}
                     </tbody>
