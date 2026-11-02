@@ -10,10 +10,10 @@ contract SupplyChain {
         Owner = msg.sender;
     }
 
-    //Roles (flow of pharma supply chain)
-    // RawMaterialSupplier; //This is where Manufacturer will get raw materials to make medicines
-    // Manufacturer;  //Various WHO guidelines should be followed by this person
-    // Distributor; //This guy distributes the medicines to retailers
+    //Roles (flow of an agricultural product supply chain)
+    // RawMaterialSupplier; //This is where Manufacturer will get raw materials to make products
+    // Manufacturer;  //Turns raw materials into finished products
+    // Distributor; //This guy distributes the products to retailers
     // Retailer; //Normal customer buys from the retailer
 
     //modifier to make sure only the owner is using the function
@@ -22,7 +22,7 @@ contract SupplyChain {
         _;
     }
 
-    //stages of a medicine in pharma supply chain
+    //stages of a product in the supply chain
     enum STAGE {
         Init,
         RawMaterialSupply,
@@ -31,10 +31,10 @@ contract SupplyChain {
         Retail,
         sold
     }
-    //using this we are going to track every single medicine the owner orders
+    //using this we are going to track every single product the owner orders
 
-    //Medicine count
-    uint256 public medicineCtr = 0;
+    //Product count
+    uint256 public productCtr = 0;
     //Raw material supplier count
     uint256 public rmsCtr = 0;
     //Manufacturer count
@@ -44,40 +44,40 @@ contract SupplyChain {
     //retailer count
     uint256 public retCtr = 0;
 
-    //To store information about the medicine
-    struct medicine {
-        uint256 id; //unique medicine id
-        string name; //name of the medicine
-        string description; //about medicine
-        uint256 RMSid; //id of the Raw Material supplier for this particular medicine
-        uint256 MANid; //id of the Manufacturer for this particular medicine
-        uint256 DISid; //id of the distributor for this particular medicine
-        uint256 RETid; //id of the retailer for this particular medicine
-        STAGE stage; //current medicine stage
+    //To store information about the product
+    struct product {
+        uint256 id; //unique product id
+        string name; //name of the product
+        string description; //about product
+        uint256 RMSid; //id of the Raw Material supplier for this particular product
+        uint256 MANid; //id of the Manufacturer for this particular product
+        uint256 DISid; //id of the distributor for this particular product
+        uint256 RETid; //id of the retailer for this particular product
+        STAGE stage; //current product stage
     }
 
-    //To store all the medicines on the blockchain
-    mapping(uint256 => medicine) public MedicineStock;
+    //To store all the products on the blockchain
+    mapping(uint256 => product) public ProductStock;
 
     //To show status to client applications
-    function showStage(uint256 _medicineID)
+    function showStage(uint256 _productID)
         public
         view
         returns (string memory)
     {
-        require(medicineCtr > 0);
-        if (MedicineStock[_medicineID].stage == STAGE.Init)
-            return "Medicine Ordered";
-        else if (MedicineStock[_medicineID].stage == STAGE.RawMaterialSupply)
+        require(productCtr > 0);
+        if (ProductStock[_productID].stage == STAGE.Init)
+            return "Product Ordered";
+        else if (ProductStock[_productID].stage == STAGE.RawMaterialSupply)
             return "Raw Material Supply Stage";
-        else if (MedicineStock[_medicineID].stage == STAGE.Manufacture)
+        else if (ProductStock[_productID].stage == STAGE.Manufacture)
             return "Manufacturing Stage";
-        else if (MedicineStock[_medicineID].stage == STAGE.Distribution)
+        else if (ProductStock[_productID].stage == STAGE.Distribution)
             return "Distribution Stage";
-        else if (MedicineStock[_medicineID].stage == STAGE.Retail)
+        else if (ProductStock[_productID].stage == STAGE.Retail)
             return "Retail Stage";
-        else if (MedicineStock[_medicineID].stage == STAGE.sold)
-            return "Medicine Sold";
+        else if (ProductStock[_productID].stage == STAGE.sold)
+            return "Product Sold";
     }
 
     //To store information about raw material supplier
@@ -165,13 +165,13 @@ contract SupplyChain {
     }
 
     //To supply raw materials from RMS supplier to the manufacturer
-    function RMSsupply(uint256 _medicineID) public {
-        require(_medicineID > 0 && _medicineID <= medicineCtr);
+    function RMSsupply(uint256 _productID) public {
+        require(_productID > 0 && _productID <= productCtr);
         uint256 _id = findRMS(msg.sender);
         require(_id > 0);
-        require(MedicineStock[_medicineID].stage == STAGE.Init);
-        MedicineStock[_medicineID].RMSid = _id;
-        MedicineStock[_medicineID].stage = STAGE.RawMaterialSupply;
+        require(ProductStock[_productID].stage == STAGE.Init);
+        ProductStock[_productID].RMSid = _id;
+        ProductStock[_productID].stage = STAGE.RawMaterialSupply;
     }
 
     //To check if RMS is available in the blockchain
@@ -183,14 +183,14 @@ contract SupplyChain {
         return 0;
     }
 
-    //To manufacture medicine
-    function Manufacturing(uint256 _medicineID) public {
-        require(_medicineID > 0 && _medicineID <= medicineCtr);
+    //To manufacture product
+    function Manufacturing(uint256 _productID) public {
+        require(_productID > 0 && _productID <= productCtr);
         uint256 _id = findMAN(msg.sender);
         require(_id > 0);
-        require(MedicineStock[_medicineID].stage == STAGE.RawMaterialSupply);
-        MedicineStock[_medicineID].MANid = _id;
-        MedicineStock[_medicineID].stage = STAGE.Manufacture;
+        require(ProductStock[_productID].stage == STAGE.RawMaterialSupply);
+        ProductStock[_productID].MANid = _id;
+        ProductStock[_productID].stage = STAGE.Manufacture;
     }
 
     //To check if Manufacturer is available in the blockchain
@@ -202,14 +202,14 @@ contract SupplyChain {
         return 0;
     }
 
-    //To supply medicines from Manufacturer to distributor
-    function Distribute(uint256 _medicineID) public {
-        require(_medicineID > 0 && _medicineID <= medicineCtr);
+    //To supply products from Manufacturer to distributor
+    function Distribute(uint256 _productID) public {
+        require(_productID > 0 && _productID <= productCtr);
         uint256 _id = findDIS(msg.sender);
         require(_id > 0);
-        require(MedicineStock[_medicineID].stage == STAGE.Manufacture);
-        MedicineStock[_medicineID].DISid = _id;
-        MedicineStock[_medicineID].stage = STAGE.Distribution;
+        require(ProductStock[_productID].stage == STAGE.Manufacture);
+        ProductStock[_productID].DISid = _id;
+        ProductStock[_productID].stage = STAGE.Distribution;
     }
 
     //To check if distributor is available in the blockchain
@@ -221,14 +221,14 @@ contract SupplyChain {
         return 0;
     }
 
-    //To supply medicines from distributor to retailer
-    function Retail(uint256 _medicineID) public {
-        require(_medicineID > 0 && _medicineID <= medicineCtr);
+    //To supply products from distributor to retailer
+    function Retail(uint256 _productID) public {
+        require(_productID > 0 && _productID <= productCtr);
         uint256 _id = findRET(msg.sender);
         require(_id > 0);
-        require(MedicineStock[_medicineID].stage == STAGE.Distribution);
-        MedicineStock[_medicineID].RETid = _id;
-        MedicineStock[_medicineID].stage = STAGE.Retail;
+        require(ProductStock[_productID].stage == STAGE.Distribution);
+        ProductStock[_productID].RETid = _id;
+        ProductStock[_productID].stage = STAGE.Retail;
     }
 
     //To check if retailer is available in the blockchain
@@ -240,25 +240,25 @@ contract SupplyChain {
         return 0;
     }
 
-    //To sell medicines from retailer to consumer
-    function sold(uint256 _medicineID) public {
-        require(_medicineID > 0 && _medicineID <= medicineCtr);
+    //To sell products from retailer to consumer
+    function sold(uint256 _productID) public {
+        require(_productID > 0 && _productID <= productCtr);
         uint256 _id = findRET(msg.sender);
         require(_id > 0);
-        require(_id == MedicineStock[_medicineID].RETid); //Only correct retailer can mark medicine as sold
-        require(MedicineStock[_medicineID].stage == STAGE.Retail);
-        MedicineStock[_medicineID].stage = STAGE.sold;
+        require(_id == ProductStock[_productID].RETid); //Only correct retailer can mark product as sold
+        require(ProductStock[_productID].stage == STAGE.Retail);
+        ProductStock[_productID].stage = STAGE.sold;
     }
 
-    // To add new medicines to the stock
-    function addMedicine(string memory _name, string memory _description)
+    // To add new products to the stock
+    function addProduct(string memory _name, string memory _description)
         public
         onlyByOwner()
     {
         require((rmsCtr > 0) && (manCtr > 0) && (disCtr > 0) && (retCtr > 0));
-        medicineCtr++;
-        MedicineStock[medicineCtr] = medicine(
-            medicineCtr,
+        productCtr++;
+        ProductStock[productCtr] = product(
+            productCtr,
             _name,
             _description,
             0,

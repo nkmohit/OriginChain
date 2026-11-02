@@ -15,8 +15,8 @@ function Supply() {
     const [currentaccount, setCurrentaccount] = useState("");
     const [loader, setloader] = useState(true);
     const [SupplyChain, setSupplyChain] = useState();
-    const [MED, setMED] = useState();
-    const [MedStage, setMedStage] = useState();
+    const [products, setProducts] = useState();
+    const [productStage, setProductStage] = useState();
     const [ID, setID] = useState();
 
 
@@ -44,15 +44,15 @@ function Supply() {
             const supplychain = new web3.eth.Contract(SupplyChainABI.abi, networkData.address);
             setSupplyChain(supplychain);
             var i;
-            const medCtr = await supplychain.methods.medicineCtr().call();
-            const med = {};
-            const medStage = [];
-            for (i = 0; i < medCtr; i++) {
-                med[i] = await supplychain.methods.MedicineStock(i + 1).call();
-                medStage[i] = await supplychain.methods.showStage(i + 1).call();
+            const productCtr = await supplychain.methods.productCtr().call();
+            const product = {};
+            const stages = [];
+            for (i = 0; i < productCtr; i++) {
+                product[i] = await supplychain.methods.ProductStock(i + 1).call();
+                stages[i] = await supplychain.methods.showStage(i + 1).call();
             }
-            setMED(med);
-            setMedStage(medStage);
+            setProducts(product);
+            setProductStage(stages);
             setloader(false);
         }
         else {
@@ -162,14 +162,14 @@ function Supply() {
                     </tr>
                 </thead>
                 <tbody>
-                    {Object.keys(MED).map(function (key) {
+                    {Object.keys(products).map(function (key) {
                         return (
                             <tr key={key}>
-                                <td>{MED[key].id}</td>
-                                <td>{MED[key].name}</td>
-                                <td>{MED[key].description}</td>
+                                <td>{products[key].id}</td>
+                                <td>{products[key].name}</td>
+                                <td>{products[key].description}</td>
                                 <td>
-                                    {MedStage[key] && MedStage[key].replace(/Medicine|med|MED|Med/g, 'Product')}
+                                    {productStage[key]}
                                 </td>
                             </tr>
                         )

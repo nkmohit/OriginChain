@@ -61,7 +61,7 @@ This smart contract models various roles and stages involved in the supply chain
 - **Retailer**: Sells the final products to customers.
 - **Customer**: The end consumer of the products.
 
-The contract owner deploys the contract and is responsible for authorizing various roles like retailer, manufacturer, etc. It stores information about the products, such as name, description, and current stage in the supply chain. Functions like `addRMS()`, `addManufacturer()`, `addDistributor()`, and `addRetailer()` are used by the contract owner to add new players to the supply chain, ensuring transparency and accountability.
+The contract owner deploys the contract and is responsible for authorizing various roles like retailer, manufacturer, etc. Products are stored in `ProductStock` (counted by `productCtr`) with a name, description, and current stage. The owner adds participants with `addRMS()`, `addManufacturer()`, `addDistributor()`, and `addRetailer()`, and records a new product with `addProduct()`. Each product then moves in order through raw-material supply, manufacture, distribution, retail, and sale.
 
 ### Registration Process to Add in Blockchain
 
@@ -105,6 +105,11 @@ The contract owner deploys the contract and is responsible for authorizing vario
 5. Compile the smart contract:
     ```sh
     truffle compile
+    ```
+
+   Run the contract tests. They cover role checks and in-order stage changes. Start Ganache on the host and port in `truffle-config.js` (port 7545 by default), then:
+    ```sh
+    truffle test
     ```
 
 6. Deploy the smart contract:
